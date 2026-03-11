@@ -12,8 +12,12 @@ class controller:
         self.joint_idx      = np.array([model.joint(name).qposadr for name in self.joint_names]) # This is same as dofadr (v_indices)
         self.ee_site        = model.site(ee_site).id
         self.table_site     = model.site('surface_site').id
-        self.obj_frame_site = model.site('obj_frame_site').id
-        self.o_obj          = self.data.site_xpos[self.obj_frame_site]  # (3,)
+        self.obj_frame_site = self._safe_site_id('obj_frame_site')
+        if self.obj_frame_site is not None:
+            self.o_obj = self.data.site_xpos[self.obj_frame_site]  # (3,)
+        else:
+            # No payload loaded: default to table surface position as a benign reference.
+            self.o_obj = self.data.site_xpos[self.table_site]
         self.stop           = False                              # Stop flag for the controller
         self.q_min          = model.jnt_range[self.joint_idx, 0] # Max joint limits
         self.q_max          = model.jnt_range[self.joint_idx, 1] # Min joint limits
@@ -42,6 +46,13 @@ class controller:
         self.ft_offset      = np.zeros((3, 1))  # Force-torque sensor offset for biasing
         self.grav_offset    = np.zeros((3, 1))  # Gravity compensation offset
         self.grav_mass      = 0.0339              # Gravity compensation mass
+
+    def _safe_site_id(self, site_name: str):
+        """Return site id if present, otherwise None."""
+        try:
+            return self.model.site(site_name).id
+        except KeyError:
+            return None
 
 
     def FK(self):

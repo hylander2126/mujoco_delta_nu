@@ -46,7 +46,7 @@ ACTUATOR_BLOCK = f"""
 """
 
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = Path(__file__).resolve().parents[0]
 ASSETS_DIR = REPO_ROOT / "assets"
 OBJ_DIR = ASSETS_DIR / "object_sim"
 GEN_DIR = ASSETS_DIR / "_generated"
@@ -60,11 +60,22 @@ def create_scene_xml(
         out           = str(ASSETS_DIR / "generated_scene.xml")
     ):
 
+    # Load the vendor's scene.xml directly — MuJoCo resolves the relative
+    # <include file="lekiwi/lekiwi.xml"/> correctly from that file's own directory.
+    if object_id == "lekiwi":
+        return str(ASSETS_DIR / "lekiwi_assets" / "scene.xml")
+
     if object_id is None:
         # Keep the robot and table, but do not spawn any payload object.
         asset_block = f'<include file="{(ASSETS_DIR / "common_modified.xml").as_posix()}"/>'
         object_block = """
         <include file="my_objects/robot/robot.xml"> </include>
+
+        <!-- Keep compatibility with code that expects object frame sites. -->
+        <body name="no_object_anchor" pos="0 0 0">
+            <site name="payload_site" pos="0 0 -10" size="0.001 0.001 0.001" type="box" rgba="1 1 0 0"/>
+            <site name="obj_frame_site" pos="0 0 -10" size="0.001 0.001 0.001" type="box" rgba="1 0 0 0"/>
+        </body>
         """
 
     elif object_id in [0, 10, 11, 12, 13, 14]:
@@ -96,6 +107,7 @@ def create_scene_xml(
         """
 
         # Make sure to set the childclass to "grab" and set the joint to "free" so it's not 'welded'
+        # Also include the robot
         object_block = f"""
         <include file="my_objects/robot/robot.xml"> </include>
 
