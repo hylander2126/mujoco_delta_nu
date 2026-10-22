@@ -1,0 +1,4 @@
+launch_mujoco: True
+use_mock_hardware: False
+rviz_config: "default.rviz"
+robot_namespace: ""

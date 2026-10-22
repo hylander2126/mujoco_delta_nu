@@ -1,0 +1,61 @@
+
+<?xml version="1.0" ?>
+<mujoco model="wheel">
+<compiler angle="radian" eulerseq="xyz"/>
+
+    <asset>
+        <mesh name="Hub_mesh" file="robot_meshes/small_omni_hub.stl"/>
+        <mesh name="Roller_mesh" file="robot_meshes/small_omni_roller.stl" inertia="convex"/>
+        <material name="Hub_mat" rgba="0 0 0 1"/>
+        <material name="Roller_mat" rgba="0.5 0.5 0.5 1"/>
+        <texture name="checker" type="2d" builtin="checker" rgb1=".1 .2 .3" rgb2=".2 .3 .4" width="300" height="300"/>
+        <material name="grid" texture="checker" texrepeat="8 8" reflectance=".2"/>
+    </asset>
+    
+
+    <default>
+        <default class="roller">
+            <geom pos="0 0 0" euler="0 0 0" type="mesh" mesh="Roller_mesh" material="Roller_mat" conaffinity="1" condim="3" contype="1" group="1" mass="0.0012" friction="1 0.001 0.0001"/>
+        </default>
+        <default class="roller_joint">
+            <joint type="hinge" pos="0 0 0"
+            axis="0 0 -1" limited="false" frictionloss="0.01" damping="0.1"/>
+        </default>
+    </default>
+    
+    
+
+   <worldbody>
+    <body name="Hub" pos="0 0 0"
+    euler="1.5707963267948966 0 0">
+        <geom name="Hub" pos="0 0 0" euler="0 0 0"  contype="2" conaffinity="2" condim="1" 
+        type="mesh" mesh="Hub_mesh" group="0" material="Hub_mat"/>
+        <inertial mass="0.0085033813" pos="0 0 -0.00618" euler="0 0 0" diaginertia="7.5338324e-07 7.5333755e-07 1.1088298e-06"/>
+        <joint name="Hub_joint" type="hinge" pos="0 0 0" axis="0 0 -1" limited="false" damping="0.1"/>
+       
+        <replicate count="4" pos="0.0135531 0 0" euler="0 0 1.5707963267948966">
+            <body name="outer_roller" pos="0.009585042429697665 0.009585042429697663 0.00451008" euler="1.5707963267948966 0.7853981633974483 0">
+                <geom class="roller"/>
+                <joint class="roller_joint"/>
+            </body>
+        </replicate>
+        
+        <replicate count="4"  pos="0.0135531 0 0" euler="0 0 1.5707963267948966">
+            <body name="inner_roller" pos="0 0.013555297 0.0155" euler="1.5707963267948966 1.5707963267948966 0">
+                <geom class="roller"/>
+                <joint class="roller_joint"/>
+            </body>
+        </replicate>
+        </body>
+    </worldbody>
+    
+    <actuator>
+        <!-- <motor name="Motor" joint="Hub_joint" ctrlrange="-10 10" ctrllimited="true" gear="0.1"/> -->
+        <velocity name="VelMotor" joint="Hub_joint" ctrlrange="-10 10" ctrllimited="true" gear="0.1"/>
+    </actuator>
+
+    <sensor>
+        <jointvel name="Hub_vel" joint="Hub_joint"/>
+    </sensor>
+          
+</mujoco>

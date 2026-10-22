@@ -1,0 +1,478 @@
+Panels:
+  - Class: rviz_common/Displays
+    Help Height: 0
+    Name: Displays
+    Property Tree Widget:
+      Expanded:
+        - /Status1
+        - /RobotModel1
+        - /TF1
+        - /TF1/Frames1
+      Splitter Ratio: 0.5
+    Tree Height: 556
+  - Class: rviz_common/Views
+    Expanded:
+      - /Current View1
+    Name: Views
+    Splitter Ratio: 0.5
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Alpha: 0.5
+      Cell Size: 1
+      Class: rviz_default_plugins/Grid
+      Color: 160; 160; 164
+      Enabled: true
+      Line Style:
+        Line Width: 0.029999999329447746
+        Value: Lines
+      Name: Grid
+      Normal Cell Count: 0
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Plane: XY
+      Plane Cell Count: 10
+      Reference Frame: <Fixed Frame>
+      Value: true
+    - Alpha: 1
+      Class: rviz_default_plugins/RobotModel
+      Collision Enabled: false
+      Description File: ""
+      Description Source: Topic
+      Description Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /robot_description
+      Enabled: true
+      Links:
+        All Links Enabled: true
+        Expand Joint Details: false
+        Expand Link Details: false
+        Expand Tree: false
+        IMU_site:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        Link Tree Style: Links in Alphabetic Order
+        Mag_site:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        PAA5100:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        PAA5100_site:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        PCB:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        w0_Hub:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        w0_Motor:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        w0_hub_base:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        w0_inner_roller_0:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        w0_inner_roller_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        w0_inner_roller_2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        w0_inner_roller_3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        w0_outer_roller_0:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        w0_outer_roller_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        w0_outer_roller_2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        w0_outer_roller_3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        w0_wheel_body:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        w1_Hub:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        w1_Motor:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        w1_hub_base:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        w1_inner_roller_0:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        w1_inner_roller_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        w1_inner_roller_2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        w1_inner_roller_3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        w1_outer_roller_0:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        w1_outer_roller_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        w1_outer_roller_2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        w1_outer_roller_3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        w1_wheel_body:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        w2_Hub:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        w2_Motor:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        w2_hub_base:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        w2_inner_roller_0:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        w2_inner_roller_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        w2_inner_roller_2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        w2_inner_roller_3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        w2_outer_roller_0:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        w2_outer_roller_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        w2_outer_roller_2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        w2_outer_roller_3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        w2_wheel_body:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+      Mass Properties:
+        Inertia: false
+        Mass: false
+      Name: RobotModel
+      TF Prefix: ""
+      Update Interval: 0
+      Value: true
+      Visual Enabled: true
+    - Class: rviz_default_plugins/TF
+      Enabled: true
+      Frame Timeout: 15
+      Frames:
+        All Enabled: false
+        IMU_site:
+          Value: false
+        Mag_site:
+          Value: false
+        PAA5100:
+          Value: false
+        PAA5100_site:
+          Value: false
+        PCB:
+          Value: false
+        base_link:
+          Value: false
+        w0_Hub:
+          Value: false
+        w0_Motor:
+          Value: false
+        w0_hub_base:
+          Value: false
+        w0_inner_roller_0:
+          Value: false
+        w0_inner_roller_1:
+          Value: false
+        w0_inner_roller_2:
+          Value: false
+        w0_inner_roller_3:
+          Value: false
+        w0_outer_roller_0:
+          Value: false
+        w0_outer_roller_1:
+          Value: false
+        w0_outer_roller_2:
+          Value: false
+        w0_outer_roller_3:
+          Value: false
+        w0_wheel_body:
+          Value: false
+        w1_Hub:
+          Value: false
+        w1_Motor:
+          Value: false
+        w1_hub_base:
+          Value: false
+        w1_inner_roller_0:
+          Value: false
+        w1_inner_roller_1:
+          Value: false
+        w1_inner_roller_2:
+          Value: false
+        w1_inner_roller_3:
+          Value: false
+        w1_outer_roller_0:
+          Value: false
+        w1_outer_roller_1:
+          Value: false
+        w1_outer_roller_2:
+          Value: false
+        w1_outer_roller_3:
+          Value: false
+        w1_wheel_body:
+          Value: false
+        w2_Hub:
+          Value: false
+        w2_Motor:
+          Value: false
+        w2_hub_base:
+          Value: false
+        w2_inner_roller_0:
+          Value: false
+        w2_inner_roller_1:
+          Value: false
+        w2_inner_roller_2:
+          Value: false
+        w2_inner_roller_3:
+          Value: false
+        w2_outer_roller_0:
+          Value: false
+        w2_outer_roller_1:
+          Value: false
+        w2_outer_roller_2:
+          Value: false
+        w2_outer_roller_3:
+          Value: false
+        w2_wheel_body:
+          Value: false
+      Marker Scale: 1
+      Name: TF
+      Show Arrows: true
+      Show Axes: true
+      Show Names: false
+      Tree:
+        base_link:
+          PAA5100:
+            PAA5100_site:
+              {}
+          PCB:
+            IMU_site:
+              {}
+            Mag_site:
+              {}
+          w0_Motor:
+            w0_wheel_body:
+              w0_hub_base:
+                w0_Hub:
+                  w0_inner_roller_0:
+                    {}
+                  w0_inner_roller_1:
+                    {}
+                  w0_inner_roller_2:
+                    {}
+                  w0_inner_roller_3:
+                    {}
+                  w0_outer_roller_0:
+                    {}
+                  w0_outer_roller_1:
+                    {}
+                  w0_outer_roller_2:
+                    {}
+                  w0_outer_roller_3:
+                    {}
+          w1_Motor:
+            w1_wheel_body:
+              w1_hub_base:
+                w1_Hub:
+                  w1_inner_roller_0:
+                    {}
+                  w1_inner_roller_1:
+                    {}
+                  w1_inner_roller_2:
+                    {}
+                  w1_inner_roller_3:
+                    {}
+                  w1_outer_roller_0:
+                    {}
+                  w1_outer_roller_1:
+                    {}
+                  w1_outer_roller_2:
+                    {}
+                  w1_outer_roller_3:
+                    {}
+          w2_Motor:
+            w2_wheel_body:
+              w2_hub_base:
+                w2_Hub:
+                  w2_inner_roller_0:
+                    {}
+                  w2_inner_roller_1:
+                    {}
+                  w2_inner_roller_2:
+                    {}
+                  w2_inner_roller_3:
+                    {}
+                  w2_outer_roller_0:
+                    {}
+                  w2_outer_roller_1:
+                    {}
+                  w2_outer_roller_2:
+                    {}
+                  w2_outer_roller_3:
+                    {}
+      Update Interval: 0
+      Value: true
+  Enabled: true
+  Global Options:
+    Background Color: 48; 48; 48
+    Fixed Frame: base_link
+    Frame Rate: 30
+  Name: root
+  Tools:
+    - Class: rviz_default_plugins/MoveCamera
+  Transformation:
+    Current:
+      Class: rviz_default_plugins/TF
+  Value: true
+  Views:
+    Current:
+      Class: rviz_default_plugins/Orbit
+      Distance: 0.14243584871292114
+      Enable Stereo Rendering:
+        Stereo Eye Separation: 0.05999999865889549
+        Stereo Focal Distance: 1
+        Swap Stereo Eyes: false
+        Value: false
+      Focal Point:
+        X: 0
+        Y: 0
+        Z: 0
+      Focal Shape Fixed Size: true
+      Focal Shape Size: 0.05000000074505806
+      Invert Z Axis: false
+      Name: Current View
+      Near Clip Distance: 0.009999999776482582
+      Pitch: 0.7602026462554932
+      Target Frame: <Fixed Frame>
+      Value: Orbit (rviz)
+      Yaw: 1.4818052053451538
+    Saved: ~
+Window Geometry:
+  Displays:
+    collapsed: false
+  Height: 1362
+  Hide Left Dock: false
+  Hide Right Dock: false
+  QMainWindow State: 000000ff00000000fd00000001000000000000045d000004b6fc0200000002fb000000100044006900730070006c006100790073010000006e0000029a0000018200fffffffb0000000a005600690065007700730100000314000002100000013200ffffff00000656000004b600000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  Views:
+    collapsed: false
+  Width: 2751
+  X: 140
+  Y: 54

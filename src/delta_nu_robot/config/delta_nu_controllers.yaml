@@ -1,0 +1,53 @@
+controller_manager:
+  ros__parameters:
+    update_rate: 50
+
+    # omni_wheel_controller:
+    #   type: omni_wheel_controller/OmniWheelController
+
+    # joint_state_broadcaster:
+    #   type: joint_state_broadcaster/JointStateBroadcaster
+
+
+omni_wheel_controller:
+  ros__parameters:
+    type: omni_wheel_controller/OmniWheelController
+    update_rate: 50  # Hz
+
+    wheel_offset: 1.5708
+    wheel_radius: 0.02
+    robot_radius: 0.15
+    wheel_names: ["w0_Hub_joint", "w1_Hub_joint", "w2_Hub_joint"]
+    open_loop: true
+
+
+joint_state_broadcaster:
+  ros__parameters:
+    type: joint_state_broadcaster/JointStateBroadcaster
+    update_rate: 50  # Hz
+    use_local_topics: false
+
+imu_broadcaster:
+  ros__parameters:
+    type: imu_broadcaster/ImuBroadcaster
+    update_rate: 50  # Hz
+    sensor_name: imu_sensor
+    rotation_offset:
+      roll: 0.0  # radians
+      rotation_offset.pitch: 0.0  # radians
+      yaw: 0.0  # radians
+
+
+magnetometer_broadcaster:
+  ros__parameters:
+    type: magnetometer_broadcaster/MagnetometerBroadcaster
+    update_rate: 50  # Hz
+    sensor_name: magnetometer_sensor
+
+
+optical_flow_broadcaster:
+  ros__parameters:
+    type: pose_broadcaster/PoseBroadcaster
+    pose_name: optical_flow_sensor
+
+

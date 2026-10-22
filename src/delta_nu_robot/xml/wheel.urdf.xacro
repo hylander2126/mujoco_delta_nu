@@ -1,0 +1,188 @@
+<?xml version="1.0" ?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="wheel">
+<xacro:macro name="wheel_assembly" params="prefix parent">
+
+
+  <!-- ============================================================
+       Xacro helpers
+  ============================================================ -->
+
+  <!-- Shorthand: create a roller body + joint at a given pose.
+       Arguments:
+         roller_name   – roller link suffix; prefix is added automatically
+         parent        – parent link name
+         xyz           – origin xyz (metres)
+         rpy           – origin rpy (radians)
+         joint_suffix  – suffix appended to joint name
+  -->
+  <xacro:macro name="roller" params="prefix roller_name parent xyz rpy joint_suffix">
+
+    <link name="${prefix}${roller_name}">
+      <visual>
+          <geometry>
+          <mesh filename="package://delta_nu_robot/xml/robot_meshes/small_omni_roller.stl"/>
+        </geometry>
+        <material name="Roller_mat">
+          <color rgba="0.5 0.5 0.5 1"/>
+        </material>
+      </visual>
+      <collision>
+        <!-- contact: conaffinity=1 condim=3 contype=1 friction="1 0.001 0.0001" -->
+          <geometry>
+          <mesh filename="package://delta_nu_robot/xml/robot_meshes/small_omni_roller.stl"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <!-- mass from MuJoCo default class "roller" -->
+        <mass value="0.0012"/>
+        <!-- Inertia not specified in source; placeholder diagonal -->
+        <inertia ixx="1e-8" ixy="0" ixz="0"
+                 iyy="1e-8" iyz="0"
+                 izz="1e-8"/>
+      </inertial>
+    </link>
+
+    <joint name="${prefix}roller_joint_${joint_suffix}" type="continuous">
+      <!-- MuJoCo roller_joint defaults: axis="0 0 -1"
+           frictionloss=0.01  damping=0.1 -->
+      <parent link="${parent}"/>
+      <child  link="${prefix}${roller_name}"/>
+      <origin xyz="${xyz}" rpy="${rpy}"/>
+      <axis xyz="0 0 -1"/>
+      <dynamics damping="0.1" friction="0.01"/>
+    </joint>
+
+  </xacro:macro>
+
+
+  <!-- Roller position offsets (from MuJoCo body definitions) -->
+  <!-- outer_roller local pos in Hub frame (before replicate rotation) -->
+  <xacro:property name="or_x0" value="0.009585042429697665"/>
+  <xacro:property name="or_y0" value="0.009585042429697663"/>
+  <xacro:property name="or_z0" value="0.00451008"/>
+
+  <!-- inner_roller local pos in Hub frame (before replicate rotation) -->
+  <xacro:property name="ir_x0" value="0"/>
+  <xacro:property name="ir_y0" value="0.013555297"/>
+  <xacro:property name="ir_z0" value="0.0155"/>
+
+  <!-- Intermediate fixed link that carries the Hub body euler offset
+       rpy="pi/2 0 0" matching MuJoCo body euler="1.5707963… 0 0" -->
+  <link name="${prefix}hub_base"/>
+
+  <joint name="${prefix}hub_base_joint" type="fixed">
+    <parent link="${parent}"/>
+    <child link="${prefix}hub_base"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+  <!-- ============================================================
+       HUB LINK
+  ============================================================ -->
+  <link name="${prefix}Hub">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://delta_nu_robot/xml/robot_meshes/small_omni_hub.stl"/>
+      </geometry>
+      <material name="Hub_mat">
+        <color rgba="0 0 0 1"/>
+      </material>
+    </visual>
+    <collision>
+      <!-- contact: contype=2 conaffinity=2 condim=1 -->
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://delta_nu_robot/xml/robot_meshes/small_omni_hub.stl"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.0085033813"/>
+      <!-- MuJoCo inertial pos="0 0 -0.00618" euler="0 0 0"
+           diaginertia="7.5338324e-07 7.5333755e-07 1.1088298e-06" -->
+      <origin xyz="0 0 -0.00618" rpy="0 0 0"/>
+      <inertia ixx="7.5338324e-07" ixy="0" ixz="0"
+               iyy="7.5333755e-07" iyz="0"
+               izz="1.1088298e-06"/>
+    </inertial>
+  </link>
+
+  <!-- Hub revolute joint (Hub_joint): axis="0 0 -1", damping=0.1
+       The hub body sits at rpy="pi/2 0 0" in the world frame -->
+  <joint name="${prefix}Hub_joint" type="continuous">
+    <parent link="${prefix}hub_base"/>
+    <child  link="${prefix}Hub"/>
+    <origin xyz="0 0 0" rpy="${pi2} 0 0"/>
+    <axis xyz="0 0 -1"/>
+    <dynamics damping="0.1" friction="0"/>
+    <limit effort="10" velocity="100"/>  <!-- effort from motor ctrlrange*gear -->
+  </joint>
+
+  <!-- ============================================================
+       OUTER ROLLERS  (4×, from replicate count="4")
+       Each body pos in Hub local frame:
+         base pos="0.009585042 0.009585042 0.00451008"
+         base rpy="pi/2  pi/4  0"
+       Replicate rotates by k×90° about Hub Z for k=1,2,3.
+  ============================================================ -->
+
+  <xacro:roller prefix="${prefix}" roller_name="outer_roller_0"
+                parent="${prefix}Hub"
+                xyz="0.009585042 0.009585042 0.00451008"
+                rpy="0 ${pi2} ${-pi4}"
+                joint_suffix="outer_0"/>
+
+  <xacro:roller prefix="${prefix}" roller_name="outer_roller_1"
+                parent="${prefix}Hub"
+                xyz="-0.009585042 0.009585042 0.00451008"
+                rpy="0 ${pi2} ${pi4}"
+                joint_suffix="outer_1"/>
+
+  <xacro:roller prefix="${prefix}" roller_name="outer_roller_2"
+                parent="${prefix}Hub"
+                xyz="-0.009585042 -0.009585042 0.00451008"
+                rpy="0 ${pi2} ${-pi4}"
+                joint_suffix="outer_2"/>
+
+  <xacro:roller prefix="${prefix}" roller_name="outer_roller_3"
+                parent="${prefix}Hub"
+                xyz="0.009585042 -0.009585042 0.00451008"
+                rpy="0 ${pi2} ${pi4}"
+                joint_suffix="outer_3"/>
+
+  <!-- ============================================================
+       INNER ROLLERS  (4×, from replicate count="4")
+       Each body pos in Hub local frame:
+         base pos="0 0.013555297 0.0155"
+         base rpy="pi/2  pi/2  0"
+       Replicate rotates by k×90° about Hub Z for k=1,2,3.
+  ============================================================ -->
+
+  <xacro:roller prefix="${prefix}" roller_name="inner_roller_0"
+                parent="${prefix}Hub"
+                xyz="0.000000000 0.013555297 0.0155"
+                rpy="0 ${pi2} 0"
+                joint_suffix="inner_0"/>
+
+  <xacro:roller prefix="${prefix}" roller_name="inner_roller_1"
+                parent="${prefix}Hub"
+                xyz="-0.013555297 0.000000000 0.0155"
+                rpy="0 ${pi2} ${pi2}"
+                joint_suffix="inner_1"/>
+
+  <xacro:roller prefix="${prefix}" roller_name="inner_roller_2"
+                parent="${prefix}Hub"
+                xyz="0.000000000 -0.013555297 0.0155"
+                rpy="0 ${pi2} ${pi}"
+                joint_suffix="inner_2"/>
+
+  <xacro:roller prefix="${prefix}" roller_name="inner_roller_3"
+                parent="${prefix}Hub"
+                xyz="0.013555297 0.000000000 0.0155"
+                rpy="0 ${pi2} ${-pi2}"
+                joint_suffix="inner_3"/>
+
+
+
+</xacro:macro>
+</robot>

@@ -1,0 +1,359 @@
+<?xml version="1.0" ?>
+<robot name="DeltaNuRobot" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+
+  <xacro:include filename="wheel.urdf.xacro"/>
+
+  <xacro:arg name="use_mock_hardware" default="true"/>
+
+
+  <xacro:property name="use_mock_hardware" value="${'$(arg use_mock_hardware)' == 'true'}"/>
+  
+  <xacro:property name="pi2"  value="${pi/2}"/>
+  <xacro:property name="pi4"  value="${pi/4}"/>
+
+  <xacro:property name="deg90" value="${pi/2}"/> 
+  <xacro:property name="deg210" value="${7*pi/6}"/>
+  <xacro:property name="deg_neg30" value="${-pi/6}"/>
+    <!-- 1.5707963… -->
+
+  <!--
+    Motor body base pos = (0, 0.05354, 0) in Base frame, rotated by k×120°.
+    x' =  x·cos(θ) − y·sin(θ)
+    y' =  x·sin(θ) + y·cos(θ)
+    With x=0, y=0.05354:
+      k=0 (  0°): x= 0.000000,  y= 0.053540
+      k=1 (120°): x=-0.046357,  y=-0.026770   (cos120=-0.5, sin120=0.86603)
+      k=2 (240°): x= 0.046357,  y=-0.026770   (cos240=-0.5, sin240=-0.86603)
+  -->
+  <xacro:property name="motor_r" value="0.05354"/>
+
+
+
+  <!-- ============================================================
+       MOTOR + WHEEL MACRO
+       Bundles one motor body, its bracket geoms, and one wheel.
+  ============================================================ -->
+  <xacro:macro name="motor_with_wheel" params="parent motor_xyz motor_rpy
+  prefix">
+
+    <!-- wheel_body pos/euler inside motor frame (same for all three) -->
+    <xacro:property name="wb_xyz" value="0.005 0 0.005"/>
+    <xacro:property name="wb_rpy" value="0 0 ${pi2}"/>
+
+    <!-- ── Motor link ─────────────────────────────────────────── -->
+    <link name="${prefix}Motor">
+      <visual>
+          <geometry>
+          <mesh filename="package://delta_nu_robot/xml/robot_meshes/SimpleMotorEncoder.stl"/>
+        </geometry>
+        <material name="motor_mat"><color rgba="0.2 0.2 0.2 1"/></material>
+      </visual>
+      <collision>
+          <geometry>
+          <mesh filename="package://delta_nu_robot/xml/robot_meshes/SimpleMotorEncoder.stl"/>
+        </geometry>
+      </collision>
+      <!-- Bracket is a separate geom in MuJoCo but same body → merge inertia -->
+      <inertial>
+        <mass value="0.016"/> <!-- motor 0.011 + bracket 0.005 -->
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia ixx="1e-5" ixy="0" ixz="0"
+                 iyy="1e-5" iyz="0"
+                 izz="1e-5"/>
+      </inertial>
+    </link>
+
+    <!-- Motor bracket visual (same link, separate visual element) -->
+    <!-- URDF allows multiple <visual> blocks on one link -->
+    <!-- Added as second visual below -->
+
+    <!-- ── Motor fixed joint to Base ──────────────────────────── -->
+    <joint name="${prefix}Motor_joint" type="fixed">
+      <parent link="${parent}"/>
+      <child  link="${prefix}Motor"/>
+      <origin xyz="${motor_xyz}" rpy="${motor_rpy}"/>
+    </joint>
+
+
+    <link name="${prefix}wheel_body"/>
+    <joint name="${prefix}wheel_body_joint" type="fixed">
+      <parent link="${prefix}Motor"/>
+      <child  link="${prefix}wheel_body"/>
+      <origin xyz="${wb_xyz}" rpy="${wb_rpy}"/>
+    </joint>
+
+    <!-- ── Wheel sub-assembly ─────────────────────────────────── -->
+  <xacro:wheel_assembly prefix="${prefix}" parent="${prefix}wheel_body"/>
+
+  </xacro:macro>
+
+
+
+  <link name="base_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://delta_nu_robot/xml/robot_meshes/Base.stl"/>
+      </geometry>
+      <material name="base_mat"><color rgba="0 0 0 1"/></material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://delta_nu_robot/xml/robot_meshes/Base.stl"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.037"/>
+      <origin xyz="0 0 -0.01" rpy="0 0 0"/>
+      <inertia ixx="1e-5" ixy="0" ixz="0"
+               iyy="1e-5" iyz="0"
+               izz="1e-5"/>
+    </inertial>
+  </link>
+
+  <!-- ============================================================
+       PAA5100 OPTICAL FLOW SENSOR
+       MuJoCo: pos="-0.0098 -0.00543 0" euler="3.14159 0 0"
+  ============================================================ -->
+  <link name="PAA5100">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://delta_nu_robot/xml/robot_meshes/PAA5100.stl"/>
+      </geometry>
+      <material name="green_pcb"><color rgba="0.2 0.7 0.2 1"/></material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://delta_nu_robot/xml/robot_meshes/PAA5100.stl"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.002"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="1e-8" ixy="0" ixz="0"
+               iyy="1e-8" iyz="0"
+               izz="1e-8"/>
+    </inertial>
+  </link>
+
+  <joint name="PAA5100_joint" type="fixed">
+    <parent link="base_link"/>
+    <child  link="PAA5100"/>
+    <origin xyz="-0.0098 -0.00543 0" rpy="${pi} 0 0"/>
+  </joint>
+
+  <!-- PAA5100 measurement site → sensor frame link
+       MuJoCo site pos="0.0098 -0.00543 0.00338" (in PAA5100 body frame) -->
+  <link name="PAA5100_site"/>
+  <joint name="PAA5100_site_joint" type="fixed">
+    <parent link="PAA5100"/>
+    <child  link="PAA5100_site"/>
+    <origin xyz="0.0098 -0.00543 0.00338" rpy="0 0 0"/>
+  </joint>
+
+  <!-- ============================================================
+       PCB
+       ============================================================ -->
+  <link name="PCB">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://delta_nu_robot/xml/robot_meshes/PCB.stl"/>
+      </geometry>
+      <material name="green_pcb"><color rgba="0.2 0.7 0.2 1"/></material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://delta_nu_robot/xml/robot_meshes/PCB.stl"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.01456956"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="1e-6" ixy="0" ixz="0"
+               iyy="1e-6" iyz="0"
+               izz="1e-6"/>
+    </inertial>
+  </link>
+
+  <joint name="PCB_joint" type="fixed">
+    <parent link="base_link"/>
+    <child  link="PCB"/>
+    <origin xyz="0 0 0.018" rpy="0 0 0"/>
+  </joint>
+
+  <!-- IMU site → sensor frame link
+       MuJoCo: pos="0.005480 -0.001085 0.00218" (in PCB body frame) -->
+  <link name="IMU_site"/>
+  <joint name="IMU_site_joint" type="fixed">
+    <parent link="PCB"/>
+    <child  link="IMU_site"/>
+    <origin xyz="0.005480 -0.001085 0.00218" rpy="0 0 0"/>
+  </joint>
+
+  <!-- Magnetometer site
+       MuJoCo: pos="-0.00185695509 -0.00364054491 0.002675" -->
+  <link name="Mag_site"/>
+  <joint name="Mag_site_joint" type="fixed">
+    <parent link="PCB"/>
+    <child  link="Mag_site"/>
+    <origin xyz="-0.00185695509 -0.00364054491 0.002675" rpy="0 0 0"/>
+  </joint>
+
+  <!-- ============================================================
+       MOTORS + WHEELS  (replicate count="3", step 120°)
+  ============================================================ -->
+
+  <!-- Motor 0  (k=0,   0°) -->
+  <xacro:motor_with_wheel
+    parent="base_link"
+    motor_xyz="${motor_r*cos(deg90)} ${motor_r*sin(deg90)} 0"
+    motor_rpy="3.141592 0 ${deg90}"
+    prefix="w0_"/>
+
+  <!-- Motor 1  (k=1, 120°) -->
+  <xacro:motor_with_wheel
+    parent="base_link"
+    motor_xyz="${motor_r*cos(deg210)} ${motor_r*sin(deg210)} 0"
+    motor_rpy="3.141592 0 ${deg210}"
+    prefix="w1_"/>
+
+  <!-- Motor 2  (k=2, 240°) -->
+  <xacro:motor_with_wheel
+    parent="base_link"
+    motor_xyz="${motor_r*cos(deg_neg30)} ${motor_r*sin(deg_neg30)} 0"
+    motor_rpy="3.141592 0 ${deg_neg30}"
+    prefix="w2_"/>
+
+  <!-- ============================================================
+       ROS 2 CONTROL — hardware interface
+       Covers:
+         • 3 × wheel Hub_joint  (effort cmd, position+velocity state)
+         • IMU sensor           (accel + gyro state interfaces)
+         • Magnetometer         (3-axis state interface)
+         • PAA5100 optical flow (2-axis velocity state interface)
+
+       For MuJoCo simulation use the mujoco_ros2_control plugin
+       (https://github.com/taDachs/mujoco_ros2_control) which reads
+       this same <ros2_control> block and wires it to MuJoCo's
+       mjData actuation / sensor arrays automatically.
+  ============================================================ -->
+
+  <ros2_control name="DeltaNuRobot" type="system">
+    
+    <xacro:if value="${use_mock_hardware}">
+      <hardware>
+        <plugin>mock_hardware/GenericSystem</plugin>
+      </hardware>
+    </xacro:if>
+
+    <xacro:unless value="${use_mock_hardware}">
+      <hardware>
+        <param name="mujoco_model">$(find delta_nu_robot)/xml/delta_nu.xml</param>
+        <plugin>mujoco_ros2_control/MujocoSystemInterface</plugin>
+      </hardware>
+    </xacro:unless>
+
+
+
+    <!-- Wheel 0 Hub joint (w0_Hub_joint) -->
+    <joint name="w0_Hub_joint">
+
+      <command_interface name="velocity">
+        <param name="min">-10.0</param>
+        <param name="max"> 10.0</param>
+      </command_interface>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+
+    <!-- Wheel 1 Hub joint (w1_Hub_joint) -->
+    <joint name="w1_Hub_joint">
+      <command_interface name="velocity">
+        <param name="min">-10.0</param>
+        <param name="max"> 10.0</param>
+      </command_interface>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+
+    <!-- Wheel 2 Hub joint (w2_Hub_joint) -->
+    <joint name="w2_Hub_joint">
+      <command_interface name="velocity">
+        <param name="min">-10.0</param>
+        <param name="max"> 10.0</param>
+      </command_interface>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+
+
+  <sensor name="opticalflow_sensor">
+    <param name="mujoco_type">pose</param>
+    <param name="mujoco_sensor_name">mjcf_paa5100_pos</param>
+
+    <state_interface name="position.x"/>
+    <state_interface name="position.y"/>
+    <state_interface name="position.z"/>
+  </sensor>
+
+    <!-- IMU — accelerometer + gyro (MuJoCo sensors: accel, gyro @ IMU_site) -->
+    <sensor name="imu_sensor">
+    <param name="mujoco_type">imu</param>
+      <param name="mujoco_sensor_name">mjcf_imu</param>
+      <state_interface name="linear_acceleration.x"/>
+      <state_interface name="linear_acceleration.y"/>
+      <state_interface name="linear_acceleration.z"/>
+      <state_interface name="angular_velocity.x"/>
+      <state_interface name="angular_velocity.y"/>
+      <state_interface name="angular_velocity.z"/>
+      <param name="orientation_mjcf_suffix">_quat</param>
+      <param name="linear_acceleration_mjcf_suffix">_accel</param>
+      <param name="angular_velocity_mjcf_suffix">_gyro</param>
+      <param name="frame_id">IMU_site</param>
+    </sensor>
+
+    <!-- Magnetometer (MuJoCo sensor: mag @ Mag_site) -->
+    <sensor name="magnetometer_">
+      <param name="mujoco_type">magnetometer</param>
+      <!-- mujoco_sensor_name does not need to match the ros2_control sensor name -->
+      <param name="mujoco_sensor_name">mjcf_mag</param>
+      <state_interface name="magnetic_field.x"/>
+      <state_interface name="magnetic_field.y"/>
+      <state_interface name="magnetic_field.z"/>
+    </sensor>
+
+    <!-- PAA5100 optical flow
+         MuJoCo sensor: framepos "paa5100_pos" @ PAA5100_site
+         Exposed as position state so an odometry node can difference it. -->
+    <sensor name="paa5100_sensor">
+      <state_interface name="position.x"/>
+      <state_interface name="position.y"/>
+      <state_interface name="position.z"/>
+      <param name="mujoco_sensor_framepos">paa5100_pos</param>
+      <param name="frame_id">PAA5100_site</param>
+    </sensor>
+
+  </ros2_control>
+
+ 
+  <mujoco>
+    <plugin filename="libmujoco_ros2_control.so"
+            name="mujoco_ros2_control">
+      <!-- Path to the MuJoCo XML model loaded by the sim launcher.
+           Only needed when the plugin launches MuJoCo internally. -->
+      <robot_param>robot_description</robot_param>
+      <robot_param_node>robot_state_publisher</robot_param_node>
+
+      <update_rate>500</update_rate>
+    </plugin>
+  </mujoco>
+
+
+
+</robot>
